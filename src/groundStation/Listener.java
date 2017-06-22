@@ -18,7 +18,7 @@ public class Listener extends Thread {
 	private int port;
 	private Main main;
 	private int packetsStart = -1;
-	private int packetsRecieved, packetsLost, packetsLast, packetsTotal;
+	private int packetNo, packetsRecieved, packetsLost, packetsLast, packetsTotal;
 	private double errorPerc, timeDiff, timeLast, testDuration;
 	private long timeStart;
 	private Date date = new Date();
@@ -26,6 +26,17 @@ public class Listener extends Thread {
 	private static final File DIR = new File("logs");
 	private File file = new File(DIR+File.separator+dateFormat.format(date)+".log");
 	private BufferedWriter bw = null;
+	private String temp, pressure, altitude, pitch, roll, yaw, longtitude, latitude; 
+	private static final int PACKETNO = 0;
+	private static final int TEMP = 1;
+	private static final int PRESSURE = 2;
+	private static final int ALTITUDE = 3;
+	private static final int PITCH = 4;
+	private static final int ROLL = 5;
+	private static final int YAW = 6;
+	private static final int LONGTITUDE = 7;
+	private static final int LATITUDE = 8;
+	private static final int LASTDATA = LATITUDE;
 
 	
 	
@@ -51,7 +62,7 @@ public class Listener extends Thread {
 	
 	private void listen() {
 		 try (DatagramSocket socket = new DatagramSocket(port)) {
-            byte[] dataBytes = new byte[4096];
+            byte[] dataBytes = new byte[128];
             while(running) {
             	DatagramPacket packet = new DatagramPacket(dataBytes, dataBytes.length);
             	socket.receive(packet);
@@ -62,9 +73,12 @@ public class Listener extends Thread {
 						dataString += (char) bytes[i];
 					}
 				}
+				extractData(dataString);
+				updateCharts();
             	dataString += System.lineSeparator() + additionalData(dataString) + System.lineSeparator();
             	dataString = "Received data: " + dataString;
             	main.tARawData.append(dataString);
+            	updateData();
             	main.sound.play();
             	writeToFile(dataString);
             }
@@ -75,13 +89,69 @@ public class Listener extends Thread {
 		}
 	}
 	
-	private int getPacketNo(String data) {
-		int i = data.indexOf(',');
-		int packetNo = Integer.parseInt(data.substring(0, i));
-		return packetNo;
+	private void extractData(String raw) {
+		int state = 0; 
+		int i;
+		while (raw.indexOf(',') != -1 | state <= LASTDATA) {
+			switch(state) {
+			case PACKETNO:
+				i = raw.indexOf(',');
+				packetNo = Integer.parseInt(raw.substring(0, i));
+				raw = raw.substring(i+1, raw.length());
+				state++;
+				break;
+			case TEMP:
+				i = raw.indexOf(',');
+				temp = raw.substring(0, i);
+				raw = raw.substring(i+1, raw.length());
+				state++;
+				break;
+			case PRESSURE:
+				i = raw.indexOf(',');
+				pressure = raw.substring(0, i);
+				raw = raw.substring(i+1, raw.length());
+				state++;
+				break;
+			case ALTITUDE:
+				i = raw.indexOf(',');
+				altitude = raw.substring(0, i);
+				raw = raw.substring(i+1, raw.length());
+				state++;
+				break;
+			case PITCH:
+				i = raw.indexOf(',');
+				pitch = raw.substring(0, i);
+				raw = raw.substring(i+1, raw.length());
+				state++;
+				break;
+			case ROLL:
+				i = raw.indexOf(',');
+				roll = raw.substring(0, i);
+				raw = raw.substring(i+1, raw.length());
+				state++;
+				break;
+			case YAW:
+				i = raw.indexOf(',');
+				yaw = raw.substring(0, i);
+				raw = raw.substring(i+1, raw.length());
+				state++;
+				break;
+			case LONGTITUDE:
+				i = raw.indexOf(',');
+				longtitude = raw.substring(0, i);
+				raw = raw.substring(i+1, raw.length());
+				state++;
+				break;
+			case LATITUDE:
+				i = raw.indexOf(',');
+				latitude = raw.substring(0, i);
+				raw = raw.substring(i+1, raw.length());
+				state++;
+			}
+		}
 	}
 	
-	private void calcStability(int packetNo) {
+	private void calcStability() {
 		packetsRecieved += 1;
 		long timeRecieved = System.currentTimeMillis();
 		if (packetsStart == -1) {
@@ -105,14 +175,30 @@ public class Listener extends Thread {
 	}
 	
 	private String additionalData(String data) {
-		calcStability(getPacketNo(data));
+		calcStability();
 		String out = "Error rate: "+errorPerc+"% Total recieved packets: "+packetsRecieved+" Packets lost: "+packetsLost+" Time difference: "+timeDiff+" Test duration: "+testDuration;
 		return out;
 	}
-
-//	private static long symmetricRound(double d) {
-//	    return d < 0 ? - Math.round( -d ) : Math.round( d );
-//	}
+	
+	private void updateData() {
+		main.tFErrorRate.setText(errorPerc+"");
+		main.tFTotalPackets.setText(packetsRecieved+"");
+		main.tFLostPackets.setText(packetsLost+"");
+		main.tFTimeDiff.setText(timeDiff+"");
+		main.tFTestDuration.setText(testDuration+"");
+	}
+	
+	private void updateCharts() {
+		if (temp != null) {
+			main.dSTemp.addValue(Double.parseDouble(temp), "°C", testDuration+"");
+		} 
+		if (pressure != null) {
+			main.dSPressure.addValue(Double.parseDouble(pressure), "hPa", testDuration+"");
+		}
+		if (altitude != null) {
+			main.dSAltitude.addValue(Double.parseDouble(altitude), "m", testDuration+"");
+		}
+	}
 	
 	private void writeToFile(String string) {
 		try {
