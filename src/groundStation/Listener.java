@@ -55,7 +55,13 @@ public class Listener extends Thread {
             while(running) {
             	DatagramPacket packet = new DatagramPacket(dataBytes, dataBytes.length);
             	socket.receive(packet);
-            	String dataString = new String(packet.getData());
+            	byte[] bytes = packet.getData();
+            	String dataString = "";
+				for(int i = 0; i < bytes.length; i++) {
+					if (bytes[i] != 0) {
+						dataString += (char) bytes[i];
+					}
+				}
             	dataString += System.lineSeparator() + additionalData(dataString) + System.lineSeparator();
             	dataString = "Received data: " + dataString;
             	main.tARawData.append(dataString);
