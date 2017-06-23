@@ -73,6 +73,7 @@ public class Listener extends Thread {
 						dataString += (char) bytes[i];
 					}
 				}
+				debug(dataString);
 				extractData(dataString);
 				updateCharts();
             	dataString += System.lineSeparator() + additionalData(dataString) + System.lineSeparator();
@@ -92,60 +93,79 @@ public class Listener extends Thread {
 	private void extractData(String raw) {
 		int state = 0; 
 		int i;
-		while (raw.indexOf(',') != -1 | state <= LASTDATA) {
+		while (state <= LASTDATA | raw.indexOf(',') != -1) {
 			switch(state) {
 			case PACKETNO:
 				i = raw.indexOf(',');
 				packetNo = Integer.parseInt(raw.substring(0, i));
+//				debug(raw);
 				raw = raw.substring(i+1, raw.length());
+				debug(raw);
+//				debug(i+"");
 				state++;
 				break;
 			case TEMP:
 				i = raw.indexOf(',');
 				temp = raw.substring(0, i);
 				raw = raw.substring(i+1, raw.length());
+				debug(raw);
+//				debug(i+"");
 				state++;
 				break;
 			case PRESSURE:
 				i = raw.indexOf(',');
 				pressure = raw.substring(0, i);
 				raw = raw.substring(i+1, raw.length());
+				debug(raw);
+//				debug(i+"");
 				state++;
 				break;
 			case ALTITUDE:
 				i = raw.indexOf(',');
 				altitude = raw.substring(0, i);
 				raw = raw.substring(i+1, raw.length());
+				debug(raw);
+//				debug(i+"");
 				state++;
 				break;
 			case PITCH:
 				i = raw.indexOf(',');
 				pitch = raw.substring(0, i);
 				raw = raw.substring(i+1, raw.length());
+				debug(raw);
+//				debug(i+"");
 				state++;
 				break;
 			case ROLL:
 				i = raw.indexOf(',');
 				roll = raw.substring(0, i);
 				raw = raw.substring(i+1, raw.length());
+				debug(raw);
+//				debug(i+"");
 				state++;
 				break;
 			case YAW:
 				i = raw.indexOf(',');
 				yaw = raw.substring(0, i);
 				raw = raw.substring(i+1, raw.length());
+				debug(raw);
+//				debug(i+"");
 				state++;
 				break;
 			case LONGTITUDE:
 				i = raw.indexOf(',');
 				longtitude = raw.substring(0, i);
 				raw = raw.substring(i+1, raw.length());
+				debug(raw);
+//				debug(i+"");
 				state++;
 				break;
 			case LATITUDE:
 				i = raw.indexOf(',');
 				latitude = raw.substring(0, i);
 				raw = raw.substring(i+1, raw.length());
+				debug(raw);
+//				debug(i+"");
 				state++;
 			}
 		}
@@ -181,11 +201,19 @@ public class Listener extends Thread {
 	}
 	
 	private void updateData() {
-		main.tFErrorRate.setText(errorPerc+"");
+		main.tFErrorRate.setText(errorPerc+"%");
 		main.tFTotalPackets.setText(packetsRecieved+"");
 		main.tFLostPackets.setText(packetsLost+"");
-		main.tFTimeDiff.setText(timeDiff+"");
-		main.tFTestDuration.setText(testDuration+"");
+		main.tFTimeDiff.setText(timeDiff+"ms");
+		main.tFTestDuration.setText(testDuration+"s");
+		main.tFTemp.setText(temp+"°C");
+		main.tFPressure.setText(pressure+"hPa");
+		main.tFAltitude.setText(altitude+"m");
+		main.tFPitch.setText(pitch+"°");
+		main.tFRoll.setText(roll+"°");
+		main.tFYaw.setText(yaw+"°");
+		main.tFLongtitude.setText(longtitude);
+		main.tFLatitude.setText(latitude);
 	}
 	
 	private void updateCharts() {
@@ -216,7 +244,10 @@ public class Listener extends Thread {
 				e1.printStackTrace();
 			}
 		}
-		
+	}
+	
+	private void debug(String string) {
+		System.out.println(string);
 	}
 	
 }
