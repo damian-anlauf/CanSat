@@ -18,7 +18,7 @@ public class Listener extends Thread {
 	private int port;
 	private Main main;
 	private int packetsStart = -1;
-	private int packetNo, status, packetsRecieved, packetsLost, packetsLast, packetsTotal;
+	private int packetNo, status, packetsReceived, packetsLost, packetsLast, packetsTotal;
 	private double errorPerc, timeDiff, timeLast, testDuration;
 	private long timeStart;
 	private Date date = new Date();
@@ -81,6 +81,8 @@ public class Listener extends Thread {
 				}
 //				System.out.println(dataString);
 				extractData(dataString);
+				dataString = packetNo+","+time+","+temp+","+pressure+","+altitude+","+pitch+","+roll+","+yaw+","+gpsTime+","+latitude+","+longtitude+","+status;
+//				System.out.println(dataString);
             	dataString += System.lineSeparator() + additionalData(dataString) + System.lineSeparator();
             	dataString = "Received data: " + dataString;
             	
@@ -130,7 +132,6 @@ public class Listener extends Thread {
 				break;
 			case GPSTIME:
 				gpsTime = data[i].trim();
-				gpsTime = gpsTime.substring(0, gpsTime.indexOf("."));
 				break;
 			case LATITUDE:
 				latitude = data[i].trim();
@@ -139,14 +140,14 @@ public class Listener extends Thread {
 				longtitude = data[i].trim();
 				break;
 			case STATUS:
-				status = Integer.parseInt(data[i].trim());
+				status = Integer.parseInt(data[i].trim().charAt(0)+"");
 			}
 		}
 	}
 	
 	private void calcStability() {
-		packetsRecieved += 1;
-		long timeRecieved = System.currentTimeMillis();
+		packetsReceived += 1;
+		long timeReceived = System.currentTimeMillis();
 		if (packetsStart == -1) {
 			packetsStart = packetNo;
 			timeStart = System.currentTimeMillis();
@@ -156,26 +157,26 @@ public class Listener extends Thread {
 				int lost = packetsDiff - 1;
 				packetsLost += lost;
 			}
-			timeDiff = timeRecieved - timeLast;
+			timeDiff = timeReceived - timeLast;
 		}
 		packetsTotal = packetNo - packetsStart + 1;
-		errorPerc = (1-((double)packetsRecieved / (double)packetsTotal)) * 100;
+		errorPerc = (1-((double)packetsReceived / (double)packetsTotal)) * 100;
 		errorPerc = Double.parseDouble(new BigDecimal(String.valueOf(errorPerc)).setScale(2, BigDecimal.ROUND_HALF_UP)+"");
 		packetsLast = packetNo;
-		testDuration = (double)(timeRecieved - timeStart) / 1000;
+		testDuration = (double)(timeReceived - timeStart) / 1000;
 		testDuration = Double.parseDouble(new BigDecimal(String.valueOf(testDuration)).setScale(3, BigDecimal.ROUND_HALF_UP)+"");
-		timeLast = timeRecieved;
+		timeLast = timeReceived;
 	}
 	
 	private String additionalData(String data) {
 		calcStability();
-		String out = "Error rate: "+errorPerc+"% Total recieved packets: "+packetsRecieved+" Packets lost: "+packetsLost+" Time difference: "+timeDiff+" Test duration: "+testDuration;
+		String out = "Error rate: "+errorPerc+"% Total received packets: "+packetsReceived+" Packets lost: "+packetsLost+" Time difference: "+timeDiff+" Test duration: "+testDuration;
 		return out;
 	}
 	
 	private void updateData() {
 		main.tFErrorRate.setText(errorPerc+"%");
-		main.tFTotalPackets.setText(packetsRecieved+"");
+		main.tFTotalPackets.setText(packetsReceived+"");
 		main.tFLostPackets.setText(packetsLost+"");
 		main.tFTimeDiff.setText(timeDiff+"ms");
 		main.tFTestDuration.setText(testDuration+"s");
@@ -186,7 +187,7 @@ public class Listener extends Thread {
 		main.tFPitch.setText(pitch+"°");
 		main.tFRoll.setText(roll+"°");
 		main.tFYaw.setText(yaw+"°");
-		main.tFGpsTime.setText(gpsTime+" GMT");
+		main.tFGpsTime.setText(gpsTime.substring(0, gpsTime.indexOf("."))+" GMT");
 		main.tFLatitude.setText(latitude+"N");
 		main.tFLongtitude.setText(longtitude+"E");
 		updateFlightStatus();

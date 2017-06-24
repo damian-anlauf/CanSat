@@ -194,8 +194,8 @@ public class Main extends JFrame {
 		Component horizontalStrut = Box.createHorizontalStrut(20);
 		topPanel2.add(horizontalStrut);
 		
-		JLabel lblTotalRecievedPackets = new JLabel("Total received packets:");
-		topPanel2.add(lblTotalRecievedPackets);
+		JLabel lblTotalReceivedPackets = new JLabel("Total received packets:");
+		topPanel2.add(lblTotalReceivedPackets);
 		
 		tFTotalPackets = new JTextField();
 		topPanel2.add(tFTotalPackets);
