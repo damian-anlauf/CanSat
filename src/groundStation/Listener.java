@@ -79,7 +79,7 @@ public class Listener extends Thread {
 						dataString += (char) bytes[i];
 					}
 				}
-				System.out.println(dataString);
+//				System.out.println(dataString);
 				extractData(dataString);
             	dataString += System.lineSeparator() + additionalData(dataString) + System.lineSeparator();
             	dataString = "Received data: " + dataString;
@@ -187,8 +187,8 @@ public class Listener extends Thread {
 		main.tFRoll.setText(roll+"°");
 		main.tFYaw.setText(yaw+"°");
 		main.tFGpsTime.setText(gpsTime+" GMT");
-		main.tFLatitude.setText(latitude);
-		main.tFLongtitude.setText(longtitude);
+		main.tFLatitude.setText(latitude+"N");
+		main.tFLongtitude.setText(longtitude+"E");
 		updateFlightStatus();
 	}
 	
@@ -218,7 +218,11 @@ public class Listener extends Thread {
 	}
 	
 	private void updateMap() {
-		main.updateMarker(Double.parseDouble(latitude), Double.parseDouble(longtitude));
+		double dLatitude = Double.parseDouble(latitude);
+		double dLongtitude = Double.parseDouble(longtitude);
+		if (dLatitude != 0 && dLongtitude != 0) {
+			main.updateMarkerCanSat(dLatitude, dLongtitude);
+		}
 	}
 	
 	private void writeToFile(String string) {

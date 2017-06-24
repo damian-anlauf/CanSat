@@ -61,10 +61,11 @@ public class Main extends JFrame {
 	private JFXPanel jfxPanel;
 	private GoogleMapView mapComponent;
     private GoogleMap map;
-    private Marker marker;
+    private Marker markerCanSat;
+    private Marker markerBase;
     private Scene scene;
-    protected MarkerOptions markerOptions;
-    private final static String MARKERNAME = "CanSat";
+    private static final double BASELATITUDE = 53.131567;
+    private static final double BASELONGTITUDE = 9.353921;
     
 
 	/**
@@ -520,7 +521,7 @@ public class Main extends JFrame {
             mapComponent = new GoogleMapView();
             mapComponent.addMapInializedListener(() -> {
 
-                LatLong center = new LatLong(53.131632, 9.353838);
+                LatLong center = new LatLong(BASELATITUDE, BASELONGTITUDE);
 
                 MapOptions options = new MapOptions()
                         .center(center)
@@ -592,27 +593,34 @@ public class Main extends JFrame {
 	}
 	
 	private void mapsModifier() {
-		
+		createMarkerBase();
 	}
 	
-	private void addMarker(double latitude, double longtitude, String name) {
-		markerOptions = new MarkerOptions();
+	private void createMarkerBase() {
+		MarkerOptions markerOptions = new MarkerOptions();
 		
-		markerOptions.position(new LatLong(latitude, longtitude))
+		markerOptions.position(new LatLong(BASELATITUDE, BASELONGTITUDE))
         .visible(Boolean.TRUE)
-        .title(name);
+        .title("Base");
 
-		marker = new Marker(markerOptions);
-		map.addMarker(marker);
+		markerBase = new Marker(markerOptions);
+		map.addMarker(markerBase);
 	}
 	
-	protected void updateMarker(double latitude, double longtitude) {
+	protected void updateMarkerCanSat(double latitude, double longtitude) {
 		Platform.runLater(() -> { 
 			try {
-				marker.toString();
-				marker.setPosition(new LatLong(latitude, longtitude));
+				markerCanSat.toString();
+				markerCanSat.setPosition(new LatLong(latitude, longtitude));
 			} catch (NullPointerException e) {
-				addMarker(latitude, longtitude, MARKERNAME);
+				MarkerOptions markerOptions = new MarkerOptions();
+				
+				markerOptions.position(new LatLong(latitude, longtitude))
+		        .visible(Boolean.TRUE)
+		        .title("CanSat");
+
+				markerCanSat = new Marker(markerOptions);
+				map.addMarker(markerCanSat);
 			}
         });
 	}
