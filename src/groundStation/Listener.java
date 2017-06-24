@@ -36,8 +36,8 @@ public class Listener extends Thread {
 	private static final int ROLL = 6;
 	private static final int YAW = 7;
 	private static final int GPSTIME = 8;
-	private static final int LONGTITUDE = 9;
-	private static final int LATITUDE = 10;
+	private static final int LATITUDE = 9;
+	private static final int LONGTITUDE = 10;
 	private static final int STATUS = 11;
 	
 	private static final int PREFLIGHT = 0;
@@ -79,13 +79,16 @@ public class Listener extends Thread {
 						dataString += (char) bytes[i];
 					}
 				}
-				debug(dataString);
+				System.out.println(dataString);
 				extractData(dataString);
-				updateCharts();
             	dataString += System.lineSeparator() + additionalData(dataString) + System.lineSeparator();
             	dataString = "Received data: " + dataString;
+            	
             	main.tARawData.append(dataString);
             	updateData();
+            	updateCharts();
+            	updateMap();
+            	
             	main.sound.play();
             	writeToFile(dataString);
             }
@@ -96,12 +99,7 @@ public class Listener extends Thread {
 		}
 	}
 	
-//	private void extractData(String raw) {
-//		String[] data = raw.split(",");
-//	}
-	
 	private void extractData(String raw) {
-		int state = 0;
 		String[] data = raw.split(",");
 		
 		for (int i = 0; i < data.length; i++) {
@@ -132,99 +130,19 @@ public class Listener extends Thread {
 				break;
 			case GPSTIME:
 				gpsTime = data[i].trim();
-				break;
-			case LONGTITUDE:
-				longtitude = data[i].trim();
+				gpsTime = gpsTime.substring(0, gpsTime.indexOf("."));
 				break;
 			case LATITUDE:
 				latitude = data[i].trim();
+				break;
+			case LONGTITUDE:
+				longtitude = data[i].trim();
 				break;
 			case STATUS:
 				status = Integer.parseInt(data[i].trim());
 			}
 		}
 	}
-	
-//	private void extractData(String raw) {
-//		int state = 0; 
-//		int i;
-//		while (state <= LASTDATA | raw.indexOf(',') != -1) {
-//			switch(state) {
-//			case PACKETNO:
-//				i = raw.indexOf(',');
-//				packetNo = Integer.parseInt(raw.substring(0, i));
-////				debug(raw);
-//				raw = raw.substring(i+1, raw.length());
-//				debug(raw);
-////				debug(i+"");
-//				state++;
-//				break;
-//			case TEMP:
-//				i = raw.indexOf(',');
-//				temp = raw.substring(0, i);
-//				raw = raw.substring(i+1, raw.length());
-//				debug(raw);
-////				debug(i+"");
-//				state++;
-//				break;
-//			case PRESSURE:
-//				i = raw.indexOf(',');
-//				pressure = raw.substring(0, i);
-//				raw = raw.substring(i+1, raw.length());
-//				debug(raw);
-////				debug(i+"");
-//				state++;
-//				break;
-//			case ALTITUDE:
-//				i = raw.indexOf(',');
-//				altitude = raw.substring(0, i);
-//				raw = raw.substring(i+1, raw.length());
-//				debug(raw);
-////				debug(i+"");
-//				state++;
-//				break;
-//			case PITCH:
-//				i = raw.indexOf(',');
-//				pitch = raw.substring(0, i);
-//				raw = raw.substring(i+1, raw.length());
-//				debug(raw);
-////				debug(i+"");
-//				state++;
-//				break;
-//			case ROLL:
-//				i = raw.indexOf(',');
-//				roll = raw.substring(0, i);
-//				raw = raw.substring(i+1, raw.length());
-//				debug(raw);
-////				debug(i+"");
-//				state++;
-//				break;
-//			case YAW:
-//				i = raw.indexOf(',');
-//				yaw = raw.substring(0, i);
-//				raw = raw.substring(i+1, raw.length());
-//				debug(raw);
-////				debug(i+"");
-//				state++;
-//				break;
-//			case LONGTITUDE:
-//				i = raw.indexOf(',');
-//				longtitude = raw.substring(0, i);
-//				raw = raw.substring(i+1, raw.length());
-//				debug(raw);
-////				debug(i+"");
-//				state++;
-//				break;
-//			case LATITUDE:
-//				i = raw.indexOf(',');
-//				latitude = raw.substring(0, i);
-//				raw = raw.substring(i+1, raw.length());
-//				debug(raw);
-////				debug(i+"");
-//				state++;
-//			}
-//		}
-//	}
 	
 	private void calcStability() {
 		packetsRecieved += 1;
@@ -261,16 +179,16 @@ public class Listener extends Thread {
 		main.tFLostPackets.setText(packetsLost+"");
 		main.tFTimeDiff.setText(timeDiff+"ms");
 		main.tFTestDuration.setText(testDuration+"s");
-		main.tFTime.setText(time);
+		main.tFTime.setText(time+"s");
 		main.tFTemp.setText(temp+"°C");
 		main.tFPressure.setText(pressure+"hPa");
 		main.tFAltitude.setText(altitude+"m");
 		main.tFPitch.setText(pitch+"°");
 		main.tFRoll.setText(roll+"°");
 		main.tFYaw.setText(yaw+"°");
-		main.tFGpsTime.setText(gpsTime);
-		main.tFLongtitude.setText(longtitude);
+		main.tFGpsTime.setText(gpsTime+" GMT");
 		main.tFLatitude.setText(latitude);
+		main.tFLongtitude.setText(longtitude);
 		updateFlightStatus();
 	}
 	
@@ -299,6 +217,10 @@ public class Listener extends Thread {
 		}
 	}
 	
+	private void updateMap() {
+		main.updateMarker(Double.parseDouble(latitude), Double.parseDouble(longtitude));
+	}
+	
 	private void writeToFile(String string) {
 		try {
 			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath(), true),Charset.forName("UTF-8").newEncoder()));
@@ -315,10 +237,6 @@ public class Listener extends Thread {
 				e1.printStackTrace();
 			}
 		}
-	}
-	
-	private void debug(String string) {
-		System.out.println(string);
 	}
 	
 }

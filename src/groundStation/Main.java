@@ -56,13 +56,15 @@ public class Main extends JFrame {
 	protected DefaultCategoryDataset dSTemp = new DefaultCategoryDataset();
 	protected DefaultCategoryDataset dSPressure = new DefaultCategoryDataset();
 	protected DefaultCategoryDataset dSAltitude = new DefaultCategoryDataset();
-	protected JTextField tFErrorRate, tFTotalPackets, tFLostPackets, tFTimeDiff, tFTestDuration, tFTime, tFTemp, tFPressure, tFAltitude, tFPitch, tFRoll, tFYaw, tFGpsTime, tFLongtitude, tFLatitude, tFStatus;
+	protected JTextField tFErrorRate, tFTotalPackets, tFLostPackets, tFTimeDiff, tFTestDuration, tFTime, tFTemp, tFPressure, tFAltitude, tFPitch, tFRoll, tFYaw, tFGpsTime, tFLatitude, tFLongtitude, tFStatus;
 	private JPanel mapsPanel;
 	private JFXPanel jfxPanel;
 	private GoogleMapView mapComponent;
     private GoogleMap map;
+    private Marker marker;
     private Scene scene;
     protected MarkerOptions markerOptions;
+    private final static String MARKERNAME = "CanSat";
     
 
 	/**
@@ -410,31 +412,12 @@ public class Main extends JFrame {
 		dataPanel.add(tFGpsTime, gbc_tFGpsTime);
 		tFGpsTime.setColumns(10);
 		
-		JLabel lblGpsLongtitude = new JLabel("GPS Longtitude:");
-		GridBagConstraints gbc_lblGpsLongtitude = new GridBagConstraints();
-		gbc_lblGpsLongtitude.insets = new Insets(0, 0, 5, 0);
-		gbc_lblGpsLongtitude.anchor = GridBagConstraints.WEST;
-		gbc_lblGpsLongtitude.gridx = 0;
-		gbc_lblGpsLongtitude.gridy = 16;
-		dataPanel.add(lblGpsLongtitude, gbc_lblGpsLongtitude);
-		
-		tFLongtitude = new JTextField();
-		tFLongtitude.setHorizontalAlignment(SwingConstants.LEFT);
-		tFLongtitude.setEditable(false);
-		GridBagConstraints gbc_tFLongtitude = new GridBagConstraints();
-		gbc_tFLongtitude.insets = new Insets(0, 0, 5, 0);
-		gbc_tFLongtitude.fill = GridBagConstraints.BOTH;
-		gbc_tFLongtitude.gridx = 0;
-		gbc_tFLongtitude.gridy = 17;
-		dataPanel.add(tFLongtitude, gbc_tFLongtitude);
-		tFLongtitude.setColumns(10);
-		
 		JLabel lblGpsLatitude = new JLabel("GPS Latitude:");
 		GridBagConstraints gbc_lblGpsLatitude = new GridBagConstraints();
 		gbc_lblGpsLatitude.insets = new Insets(0, 0, 5, 0);
 		gbc_lblGpsLatitude.anchor = GridBagConstraints.WEST;
 		gbc_lblGpsLatitude.gridx = 0;
-		gbc_lblGpsLatitude.gridy = 18;
+		gbc_lblGpsLatitude.gridy = 16;
 		dataPanel.add(lblGpsLatitude, gbc_lblGpsLatitude);
 		
 		tFLatitude = new JTextField();
@@ -444,9 +427,28 @@ public class Main extends JFrame {
 		gbc_tFLatitude.insets = new Insets(0, 0, 5, 0);
 		gbc_tFLatitude.fill = GridBagConstraints.BOTH;
 		gbc_tFLatitude.gridx = 0;
-		gbc_tFLatitude.gridy = 19;
+		gbc_tFLatitude.gridy = 17;
 		dataPanel.add(tFLatitude, gbc_tFLatitude);
 		tFLatitude.setColumns(10);
+		
+		JLabel lblGpsLongtitude = new JLabel("GPS Longtitude:");
+		GridBagConstraints gbc_lblGpsLongtitude = new GridBagConstraints();
+		gbc_lblGpsLongtitude.insets = new Insets(0, 0, 5, 0);
+		gbc_lblGpsLongtitude.anchor = GridBagConstraints.WEST;
+		gbc_lblGpsLongtitude.gridx = 0;
+		gbc_lblGpsLongtitude.gridy = 18;
+		dataPanel.add(lblGpsLongtitude, gbc_lblGpsLongtitude);
+		
+		tFLongtitude = new JTextField();
+		tFLongtitude.setHorizontalAlignment(SwingConstants.LEFT);
+		tFLongtitude.setEditable(false);
+		GridBagConstraints gbc_tFLongtitude = new GridBagConstraints();
+		gbc_tFLongtitude.insets = new Insets(0, 0, 5, 0);
+		gbc_tFLongtitude.fill = GridBagConstraints.BOTH;
+		gbc_tFLongtitude.gridx = 0;
+		gbc_tFLongtitude.gridy = 19;
+		dataPanel.add(tFLongtitude, gbc_tFLongtitude);
+		tFLongtitude.setColumns(10);
 		
 		JLabel lblFlightStatus = new JLabel("Flight Status:");
 		GridBagConstraints gbc_lblFlightStatus = new GridBagConstraints();
@@ -561,8 +563,8 @@ public class Main extends JFrame {
 		tFRoll.setText("");
 		tFYaw.setText("");
 		tFGpsTime.setText("");
-		tFLongtitude.setText("");
 		tFLatitude.setText("");
+		tFLongtitude.setText("");
 		tFStatus.setText("");
 	}
 	
@@ -590,7 +592,7 @@ public class Main extends JFrame {
 	}
 	
 	private void mapsModifier() {
-//		addMarker(53.131632, 9.353838, "Home");
+		
 	}
 	
 	private void addMarker(double latitude, double longtitude, String name) {
@@ -600,9 +602,19 @@ public class Main extends JFrame {
         .visible(Boolean.TRUE)
         .title(name);
 
-		Marker marker = new Marker(markerOptions);
-
+		marker = new Marker(markerOptions);
 		map.addMarker(marker);
+	}
+	
+	protected void updateMarker(double latitude, double longtitude) {
+		Platform.runLater(() -> { 
+			try {
+				marker.toString();
+				marker.setPosition(new LatLong(latitude, longtitude));
+			} catch (NullPointerException e) {
+				addMarker(latitude, longtitude, MARKERNAME);
+			}
+        });
 	}
 	
 }
