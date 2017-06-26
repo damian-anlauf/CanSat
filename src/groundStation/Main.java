@@ -42,15 +42,17 @@ import java.awt.Component;
 import javax.swing.Box;
 import javax.swing.JTabbedPane;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 
 public class Main extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField tFPort;
-	private JButton btnConnect;
+	private JButton btnConnect, btnEnforceFlight;
 	private int port;
 	private Listener listener;
 	protected JTextArea tARawData;
+	private JCheckBox chckbxEnableEnforceFlightButton;
 	protected AudioClip sound = Applet.newAudioClip(getClass().getResource("beep.wav"));
 	private JFreeChart tempChart, pressureChart, altitudeChart;
 	protected DefaultCategoryDataset dSTemp = new DefaultCategoryDataset();
@@ -64,6 +66,8 @@ public class Main extends JFrame {
     private Marker markerCanSat;
     private Marker markerBase;
     private Scene scene;
+    private static final String C = "Connect";
+    private static final String D = "Disconnect";
     private static final double BASELATITUDE = 53.131567;
     private static final double BASELONGTITUDE = 9.353921;
     
@@ -160,7 +164,7 @@ public class Main extends JFrame {
 		topPanel1.add(tFPort, gbc_tFPort);
 		tFPort.setColumns(10);
 		
-		btnConnect = new JButton("Connect");
+		btnConnect = new JButton(C);
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				connect();
@@ -256,9 +260,9 @@ public class Main extends JFrame {
 		analyticsPanel.add(dataPanel, gbc_dataPanel);
 		GridBagLayout gbl_dataPanel = new GridBagLayout();
 		gbl_dataPanel.columnWidths = new int[]{74, 0};
-		gbl_dataPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_dataPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_dataPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_dataPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_dataPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
 		dataPanel.setLayout(gbl_dataPanel);
 		
 		JLabel lblTime = new JLabel("Time:");
@@ -463,11 +467,37 @@ public class Main extends JFrame {
 		tFStatus.setEditable(false);
 		tFStatus.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_tFStatus = new GridBagConstraints();
+		gbc_tFStatus.insets = new Insets(0, 0, 5, 0);
 		gbc_tFStatus.fill = GridBagConstraints.BOTH;
 		gbc_tFStatus.gridx = 0;
 		gbc_tFStatus.gridy = 21;
 		dataPanel.add(tFStatus, gbc_tFStatus);
 		tFStatus.setColumns(10);
+		
+		btnEnforceFlight = new JButton("Enforce Flight");
+		btnEnforceFlight.setEnabled(false);
+		btnEnforceFlight.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				enforceFlightMode();
+			}
+		});
+		
+		chckbxEnableEnforceFlightButton = new JCheckBox("Enable Button");
+		chckbxEnableEnforceFlightButton.setEnabled(false);
+		chckbxEnableEnforceFlightButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				enableEFButton();
+			}
+		});
+		GridBagConstraints gbc_chckbxEnableEnforceFlightButton = new GridBagConstraints();
+		gbc_chckbxEnableEnforceFlightButton.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxEnableEnforceFlightButton.gridx = 0;
+		gbc_chckbxEnableEnforceFlightButton.gridy = 23;
+		dataPanel.add(chckbxEnableEnforceFlightButton, gbc_chckbxEnableEnforceFlightButton);
+		GridBagConstraints gbc_btnEnforceFlight = new GridBagConstraints();
+		gbc_btnEnforceFlight.gridx = 0;
+		gbc_btnEnforceFlight.gridy = 24;
+		dataPanel.add(btnEnforceFlight, gbc_btnEnforceFlight);
 		
 		ChartPanel cPPressure = new ChartPanel(pressureChart);
 		GridBagConstraints gbc_cPPressure = new GridBagConstraints();
@@ -526,7 +556,7 @@ public class Main extends JFrame {
                 MapOptions options = new MapOptions()
                         .center(center)
                         .mapMarker(true)
-                        .zoom(13)
+                        .zoom(15)
                         .overviewMapControl(false)
                         .panControl(false)
                         .rotateControl(false)
@@ -570,26 +600,38 @@ public class Main extends JFrame {
 	}
 	
 	private void connect() {
-		String c = "Connect";
-		String d = "Disconnect";
 		try {
-			if (btnConnect.getText().equals(c)) {
+			if (btnConnect.getText().equals(C)) {
 				clearData();
 				port = Integer.parseInt(tFPort.getText().trim());
 				listener = new Listener(this, port);
 				listener.start();
-				btnConnect.setText(d);
 				tFPort.setEditable(false);
+				chckbxEnableEnforceFlightButton.setEnabled(true);
+				btnConnect.setText(D);
 			}
-			else if (btnConnect.getText().equals(d)) {
+			else if (btnConnect.getText().equals(D)) {
 				listener.running  = false;
-				btnConnect.setText(c);
 				tFPort.setEditable(true);
+				btnEnforceFlight.setEnabled(false);
+				chckbxEnableEnforceFlightButton.setSelected(false);
+				chckbxEnableEnforceFlightButton.setEnabled(false);
+				btnConnect.setText(C);
 			}
 		} catch (NumberFormatException e) {
 			String message = "Port contains invalid characters."+System.lineSeparator()+"Please try again.";
 			JOptionPane.showMessageDialog(this, message);
 		}
+	}
+	
+	private void enforceFlightMode() {
+		String message = "1";
+		Sender sender = new Sender(port, message);
+		sender.start();
+	}
+	
+	private void enableEFButton() {
+		btnEnforceFlight.setEnabled(chckbxEnableEnforceFlightButton.isSelected());
 	}
 	
 	private void mapsModifier() {
