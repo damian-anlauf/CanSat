@@ -193,8 +193,8 @@ public class Listener extends Thread {
 		main.tFYaw.setText(yaw+"°");
 		main.tFGpsTime.setText(gpsTime.substring(0, gpsTime.indexOf("."))+" GMT");
 		main.tFGpsAltitude.setText(gpsAltitude+"m");
-		main.tFLatitude.setText(latitude+"N");
-		main.tFLongtitude.setText(longtitude+"E");
+		main.tFLatitude.setText(latitude);
+		main.tFLongtitude.setText(longtitude);
 		updateFlightStatus();
 	}
 	
