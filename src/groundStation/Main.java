@@ -94,7 +94,7 @@ public class Main extends JFrame {
 	public Main() {
 		setTitle("Team Recognize - Ground Station");
 		createGUI();
-//		initMaps();
+		initMaps();
 	}
 	
 	private void createGUI() {
