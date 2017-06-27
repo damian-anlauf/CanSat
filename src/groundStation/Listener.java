@@ -191,7 +191,7 @@ public class Listener extends Thread {
 		main.tFPitch.setText(pitch+"°");
 		main.tFRoll.setText(roll+"°");
 		main.tFYaw.setText(yaw+"°");
-		main.tFGpsTime.setText(gpsTime.substring(0, gpsTime.indexOf("."))+" GMT");
+		main.tFGpsTime.setText(gpsTime+" GMT");
 		main.tFGpsAltitude.setText(gpsAltitude+"m");
 		main.tFLatitude.setText(latitude);
 		main.tFLongtitude.setText(longtitude);
