@@ -26,7 +26,7 @@ public class Listener extends Thread {
 	private static final File DIR = new File("logs");
 	private File file = new File(DIR+File.separator+dateFormat.format(date)+".log");
 	private BufferedWriter bw = null;
-	private String time, temp, pressure, altitude, pitch, roll, yaw, gpsTime, longtitude, latitude; 
+	private String time, temp, pressure, altitude, pitch, roll, yaw, gpsTime, gpsAltitude, latitude, longtitude;
 	private static final int PACKETNO = 0;
 	private static final int TIME = 1;
 	private static final int TEMP = 2;
@@ -36,9 +36,10 @@ public class Listener extends Thread {
 	private static final int ROLL = 6;
 	private static final int YAW = 7;
 	private static final int GPSTIME = 8;
-	private static final int LATITUDE = 9;
-	private static final int LONGTITUDE = 10;
-	private static final int STATUS = 11;
+	private static final int GPSALTITUDE = 9;
+	private static final int LATITUDE = 10;
+	private static final int LONGTITUDE = 11;
+	private static final int STATUS = 12;
 	
 	private static final int PREFLIGHT = 0;
 	private static final int FLIGHT = 1;
@@ -81,7 +82,7 @@ public class Listener extends Thread {
 				}
 //				System.out.println(dataString);
 				extractData(dataString);
-				dataString = packetNo+","+time+","+temp+","+pressure+","+altitude+","+pitch+","+roll+","+yaw+","+gpsTime+","+latitude+","+longtitude+","+status;
+				dataString = packetNo+","+time+","+temp+","+pressure+","+altitude+","+pitch+","+roll+","+yaw+","+gpsAltitude+","+gpsTime+","+latitude+","+longtitude+","+status;
 //				System.out.println(dataString);
             	dataString += System.lineSeparator() + additionalData(dataString) + System.lineSeparator();
             	dataString = "Received data: " + dataString;
@@ -132,6 +133,9 @@ public class Listener extends Thread {
 				break;
 			case GPSTIME:
 				gpsTime = data[i].trim();
+				break;
+			case GPSALTITUDE:
+				gpsAltitude = data[i].trim();
 				break;
 			case LATITUDE:
 				latitude = data[i].trim();
@@ -188,6 +192,7 @@ public class Listener extends Thread {
 		main.tFRoll.setText(roll+"°");
 		main.tFYaw.setText(yaw+"°");
 		main.tFGpsTime.setText(gpsTime.substring(0, gpsTime.indexOf("."))+" GMT");
+		main.tFGpsAltitude.setText(gpsAltitude+"m");
 		main.tFLatitude.setText(latitude+"N");
 		main.tFLongtitude.setText(longtitude+"E");
 		updateFlightStatus();

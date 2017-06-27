@@ -58,7 +58,7 @@ public class Main extends JFrame {
 	protected DefaultCategoryDataset dSTemp = new DefaultCategoryDataset();
 	protected DefaultCategoryDataset dSPressure = new DefaultCategoryDataset();
 	protected DefaultCategoryDataset dSAltitude = new DefaultCategoryDataset();
-	protected JTextField tFErrorRate, tFTotalPackets, tFLostPackets, tFTimeDiff, tFTestDuration, tFTime, tFTemp, tFPressure, tFAltitude, tFPitch, tFRoll, tFYaw, tFGpsTime, tFLatitude, tFLongtitude, tFStatus;
+	protected JTextField tFErrorRate, tFTotalPackets, tFLostPackets, tFTimeDiff, tFTestDuration, tFTime, tFTemp, tFPressure, tFAltitude, tFPitch, tFRoll, tFYaw, tFGpsTime, tFGpsAltitude, tFLatitude, tFLongtitude, tFStatus;
 	private JPanel mapsPanel;
 	private JFXPanel jfxPanel;
 	private GoogleMapView mapComponent;
@@ -260,9 +260,9 @@ public class Main extends JFrame {
 		analyticsPanel.add(dataPanel, gbc_dataPanel);
 		GridBagLayout gbl_dataPanel = new GridBagLayout();
 		gbl_dataPanel.columnWidths = new int[]{74, 0};
-		gbl_dataPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_dataPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_dataPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_dataPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_dataPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
 		dataPanel.setLayout(gbl_dataPanel);
 		
 		JLabel lblTime = new JLabel("Time:");
@@ -398,12 +398,31 @@ public class Main extends JFrame {
 		dataPanel.add(tFYaw, gbc_tFYaw);
 		tFYaw.setColumns(10);
 		
+		JLabel lblGpsAltitude = new JLabel("GPS Altitude:");
+		GridBagConstraints gbc_lblGpsAltitude = new GridBagConstraints();
+		gbc_lblGpsAltitude.anchor = GridBagConstraints.WEST;
+		gbc_lblGpsAltitude.insets = new Insets(0, 0, 5, 0);
+		gbc_lblGpsAltitude.gridx = 0;
+		gbc_lblGpsAltitude.gridy = 14;
+		dataPanel.add(lblGpsAltitude, gbc_lblGpsAltitude);
+		
+		tFGpsAltitude = new JTextField();
+		tFGpsAltitude.setHorizontalAlignment(SwingConstants.LEFT);
+		tFGpsAltitude.setEditable(false);
+		GridBagConstraints gbc_tFGpsAltitude = new GridBagConstraints();
+		gbc_tFGpsAltitude.insets = new Insets(0, 0, 5, 0);
+		gbc_tFGpsAltitude.fill = GridBagConstraints.BOTH;
+		gbc_tFGpsAltitude.gridx = 0;
+		gbc_tFGpsAltitude.gridy = 15;
+		dataPanel.add(tFGpsAltitude, gbc_tFGpsAltitude);
+		tFGpsAltitude.setColumns(10);
+		
 		JLabel lblGpsTime = new JLabel("GPS Time:");
 		GridBagConstraints gbc_lblGpsTime = new GridBagConstraints();
 		gbc_lblGpsTime.anchor = GridBagConstraints.WEST;
 		gbc_lblGpsTime.insets = new Insets(0, 0, 5, 0);
 		gbc_lblGpsTime.gridx = 0;
-		gbc_lblGpsTime.gridy = 14;
+		gbc_lblGpsTime.gridy = 16;
 		dataPanel.add(lblGpsTime, gbc_lblGpsTime);
 		
 		tFGpsTime = new JTextField();
@@ -413,7 +432,7 @@ public class Main extends JFrame {
 		gbc_tFGpsTime.insets = new Insets(0, 0, 5, 0);
 		gbc_tFGpsTime.fill = GridBagConstraints.BOTH;
 		gbc_tFGpsTime.gridx = 0;
-		gbc_tFGpsTime.gridy = 15;
+		gbc_tFGpsTime.gridy = 17;
 		dataPanel.add(tFGpsTime, gbc_tFGpsTime);
 		tFGpsTime.setColumns(10);
 		
@@ -422,7 +441,7 @@ public class Main extends JFrame {
 		gbc_lblGpsLatitude.insets = new Insets(0, 0, 5, 0);
 		gbc_lblGpsLatitude.anchor = GridBagConstraints.WEST;
 		gbc_lblGpsLatitude.gridx = 0;
-		gbc_lblGpsLatitude.gridy = 16;
+		gbc_lblGpsLatitude.gridy = 18;
 		dataPanel.add(lblGpsLatitude, gbc_lblGpsLatitude);
 		
 		tFLatitude = new JTextField();
@@ -432,7 +451,7 @@ public class Main extends JFrame {
 		gbc_tFLatitude.insets = new Insets(0, 0, 5, 0);
 		gbc_tFLatitude.fill = GridBagConstraints.BOTH;
 		gbc_tFLatitude.gridx = 0;
-		gbc_tFLatitude.gridy = 17;
+		gbc_tFLatitude.gridy = 19;
 		dataPanel.add(tFLatitude, gbc_tFLatitude);
 		tFLatitude.setColumns(10);
 		
@@ -441,7 +460,7 @@ public class Main extends JFrame {
 		gbc_lblGpsLongtitude.insets = new Insets(0, 0, 5, 0);
 		gbc_lblGpsLongtitude.anchor = GridBagConstraints.WEST;
 		gbc_lblGpsLongtitude.gridx = 0;
-		gbc_lblGpsLongtitude.gridy = 18;
+		gbc_lblGpsLongtitude.gridy = 20;
 		dataPanel.add(lblGpsLongtitude, gbc_lblGpsLongtitude);
 		
 		tFLongtitude = new JTextField();
@@ -451,7 +470,7 @@ public class Main extends JFrame {
 		gbc_tFLongtitude.insets = new Insets(0, 0, 5, 0);
 		gbc_tFLongtitude.fill = GridBagConstraints.BOTH;
 		gbc_tFLongtitude.gridx = 0;
-		gbc_tFLongtitude.gridy = 19;
+		gbc_tFLongtitude.gridy = 21;
 		dataPanel.add(tFLongtitude, gbc_tFLongtitude);
 		tFLongtitude.setColumns(10);
 		
@@ -460,7 +479,7 @@ public class Main extends JFrame {
 		gbc_lblFlightStatus.insets = new Insets(0, 0, 5, 0);
 		gbc_lblFlightStatus.anchor = GridBagConstraints.WEST;
 		gbc_lblFlightStatus.gridx = 0;
-		gbc_lblFlightStatus.gridy = 20;
+		gbc_lblFlightStatus.gridy = 22;
 		dataPanel.add(lblFlightStatus, gbc_lblFlightStatus);
 		
 		tFStatus = new JTextField();
@@ -470,7 +489,7 @@ public class Main extends JFrame {
 		gbc_tFStatus.insets = new Insets(0, 0, 5, 0);
 		gbc_tFStatus.fill = GridBagConstraints.BOTH;
 		gbc_tFStatus.gridx = 0;
-		gbc_tFStatus.gridy = 21;
+		gbc_tFStatus.gridy = 23;
 		dataPanel.add(tFStatus, gbc_tFStatus);
 		tFStatus.setColumns(10);
 		
@@ -492,11 +511,11 @@ public class Main extends JFrame {
 		GridBagConstraints gbc_chckbxEnableEnforceFlightButton = new GridBagConstraints();
 		gbc_chckbxEnableEnforceFlightButton.insets = new Insets(0, 0, 5, 0);
 		gbc_chckbxEnableEnforceFlightButton.gridx = 0;
-		gbc_chckbxEnableEnforceFlightButton.gridy = 23;
+		gbc_chckbxEnableEnforceFlightButton.gridy = 25;
 		dataPanel.add(chckbxEnableEnforceFlightButton, gbc_chckbxEnableEnforceFlightButton);
 		GridBagConstraints gbc_btnEnforceFlight = new GridBagConstraints();
 		gbc_btnEnforceFlight.gridx = 0;
-		gbc_btnEnforceFlight.gridy = 24;
+		gbc_btnEnforceFlight.gridy = 26;
 		dataPanel.add(btnEnforceFlight, gbc_btnEnforceFlight);
 		
 		ChartPanel cPPressure = new ChartPanel(pressureChart);
