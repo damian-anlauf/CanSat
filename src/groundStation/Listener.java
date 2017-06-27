@@ -82,7 +82,7 @@ public class Listener extends Thread {
 				}
 //				System.out.println(dataString);
 				extractData(dataString);
-				dataString = packetNo+","+time+","+temp+","+pressure+","+altitude+","+pitch+","+roll+","+yaw+","+gpsAltitude+","+gpsTime+","+latitude+","+longtitude+","+status;
+				dataString = packetNo+","+time+","+temp+","+pressure+","+altitude+","+pitch+","+roll+","+yaw+","+gpsTime+","+gpsAltitude+","+latitude+","+longtitude+","+status;
 //				System.out.println(dataString);
             	dataString += System.lineSeparator() + additionalData(dataString) + System.lineSeparator();
             	dataString = "Received data: " + dataString;
