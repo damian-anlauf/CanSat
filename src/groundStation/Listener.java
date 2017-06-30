@@ -104,11 +104,14 @@ public class Listener extends Thread {
 	
 	private void extractData(String raw) {
 		String[] data = raw.split(",");
-		
 		for (int i = 0; i < data.length; i++) {
 			switch (i) {
 			case PACKETNO:
-				packetNo = Integer.parseInt(data[i].trim());
+				try {
+					packetNo = Integer.parseInt(data[i].trim());
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
 				break;
 			case TIME:
 				time = data[i].trim();
@@ -144,7 +147,11 @@ public class Listener extends Thread {
 				gpsAltitude = data[i].trim();
 				break;
 			case STATUS:
-				status = Integer.parseInt(data[i].trim().charAt(0)+"");
+				try {
+					status = Integer.parseInt(data[i].trim().charAt(0)+"");
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
